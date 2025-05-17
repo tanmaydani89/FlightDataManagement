@@ -1,0 +1,44 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/flights",
+    "bodyPatterns": [ 
+      {
+        "equalToJson": {
+          "from": "LHR",
+          "to": "JFK",
+          "outboundDate": "2024-08-01",
+          "inboundDate": "2024-08-01"
+        },
+        "ignoreArrayOrder" : true,
+        "ignoreExtraElements" : true
+      }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/json"
+    },
+    "jsonBody": [
+      {
+        "carrier": "PostmanMockAir",
+        "basePrice": 750.00,
+        "tax": 75.00,
+        "departureAirportName": "LHR",
+        "arrivalAirportName": "JFK",
+        "outboundDateTime": "2024-08-01T10:00:00",
+        "inboundDateTime": "2024-08-01T18:00:00"
+      },
+      {
+        "carrier": "PostmanTestJet",
+        "basePrice": 700.00,
+        "tax": 70.00,
+        "departureAirportName": "LHR",
+        "arrivalAirportName": "JFK",
+        "outboundDateTime": "2024-08-01T11:30:00",
+        "inboundDateTime": "2024-08-01T19:30:00"
+      }
+    ]
+  }
+}

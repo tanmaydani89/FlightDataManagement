@@ -1,0 +1,493 @@
+{
+	"info": {
+		"_postman_id": "12397104-7c7b-4374-a8d6-6efcbe2487ca",
+		"name": "Flight Data Management API",
+		"description": "Collection for managing and searching flight data, including internal DB and CrazySupplier integration.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "10592147"
+	},
+	"item": [
+		{
+			"name": "General Utility",
+			"item": [
+				{
+					"name": "Root Redirect (to Swagger)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								""
+							]
+						},
+						"description": "If RootController is implemented, this redirects to Swagger UI."
+					},
+					"response": []
+				},
+				{
+					"name": "Swagger UI",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/swagger-ui.html",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"swagger-ui.html"
+							]
+						},
+						"description": "Access the API documentation via Swagger UI."
+					},
+					"response": []
+				},
+				{
+					"name": "H2 Console",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/h2-console",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"h2-console"
+							]
+						},
+						"description": "Access the H2 in-memory database console."
+					},
+					"response": []
+				},
+				{
+					"name": "Ping Test",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/flights/ping",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"flights",
+								"ping"
+							]
+						},
+						"description": "Simple ping to check if the API is responsive."
+					},
+					"response": []
+				}
+			],
+			"description": "Helper and test endpoints."
+		},
+		{
+			"name": "Internal DB Flight Operations",
+			"item": [
+				{
+					"name": "Create New Flight",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201 Created\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"if (jsonData && jsonData.id) {",
+									"    pm.environment.set(\"createdFlightId\", jsonData.id);",
+									"    console.log(\"Set createdFlightId to: \" + jsonData.id);",
+									"} else {",
+									"    console.log(\"Flight ID not found in response to set environment variable.\");",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"airline\": \"PostmanAir\",\n    \"supplier\": \"InternalDB\",\n    \"fare\": 275.99,\n    \"departureAirport\": \"PMA\",\n    \"destinationAirport\": \"TSA\",\n    \"departureTime\": \"2024-09-10T10:00:00Z\",\n    \"arrivalTime\": \"2024-09-10T12:30:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/flights",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"flights"
+							]
+						},
+						"description": "Creates a new flight record in the internal database. The ID of the created flight is stored in the `createdFlightId` environment variable for subsequent requests."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Flight By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/flights/{{createdFlightId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"flights",
+								"{{createdFlightId}}"
+							]
+						},
+						"description": "Retrieves a specific flight by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Flights (Internal DB)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/flights",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"flights"
+							]
+						},
+						"description": "Retrieves all flight records stored in the internal database."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Flight",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"airline\": \"PostmanAir Updated\",\n    \"supplier\": \"InternalDB_Revised\",\n    \"fare\": 299.00,\n    \"departureAirport\": \"PMA\",\n    \"destinationAirport\": \"TSB\",\n    \"departureTime\": \"2024-09-11T11:00:00Z\",\n    \"arrivalTime\": \"2024-09-11T13:30:00Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/flights/{{createdFlightId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"flights",
+								"{{createdFlightId}}"
+							]
+						},
+						"description": "Updates an existing flight record by its ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Flight",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 204 No Content\", function () {",
+									"    pm.response.to.have.status(204);",
+									"});",
+									"// Optionally clear the variable if needed, or manage it for further testing scenarios",
+									"// pm.environment.unset(\"createdFlightId\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/flights/{{createdFlightId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"flights",
+								"{{createdFlightId}}"
+							]
+						},
+						"description": "Deletes a specific flight by its ID."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing flight data stored in the application's database."
+		},
+		{
+			"name": "Search Flights (Internal & CrazySupplier)",
+			"item": [
+				{
+					"name": "Search by Origin, Destination, Date",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/flights/search?origin=LHR&destination=JFK&departureDate=2024-08-01",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"flights",
+								"search"
+							],
+							"query": [
+								{
+									"key": "origin",
+									"value": "LHR"
+								},
+								{
+									"key": "destination",
+									"value": "JFK"
+								},
+								{
+									"key": "departureDate",
+									"value": "2024-08-01",
+									"description": "ISO_LOCAL_DATE format (e.g., YYYY-MM-DD)"
+								}
+							]
+						},
+						"description": "Searches flights primarily based on origin, destination, and a specific departure date (crucial for CrazySupplier query)."
+					},
+					"response": []
+				},
+				{
+					"name": "Search with Airline Filter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/flights/search?airline=PostmanAir&departureDate=2024-09-10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"flights",
+								"search"
+							],
+							"query": [
+								{
+									"key": "origin",
+									"value": "SFO",
+									"disabled": true
+								},
+								{
+									"key": "destination",
+									"value": "LAX",
+									"disabled": true
+								},
+								{
+									"key": "airline",
+									"value": "PostmanAir"
+								},
+								{
+									"key": "departureDate",
+									"value": "2024-09-10"
+								}
+							]
+						},
+						"description": "Includes an airline filter in the search."
+					},
+					"response": []
+				},
+				{
+					"name": "Search with Departure Time Filter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/flights/search?origin=CDG&destination=AMS&departureTime=2024-09-05T08:00:00Z&departureDate=2024-09-05",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"flights",
+								"search"
+							],
+							"query": [
+								{
+									"key": "origin",
+									"value": "CDG"
+								},
+								{
+									"key": "destination",
+									"value": "AMS"
+								},
+								{
+									"key": "departureTime",
+									"value": "2024-09-05T08:00:00Z",
+									"description": "ISO_DATE_TIME format (UTC)"
+								},
+								{
+									"key": "departureDate",
+									"value": "2024-09-05"
+								}
+							]
+						},
+						"description": "Filters flights departing on or after the specified UTC date-time."
+					},
+					"response": []
+				},
+				{
+					"name": "Search with Arrival Time Filter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/flights/search?origin=BER&destination=MUC&arrivalTime=2024-09-10T18:00:00Z&departureDate=2024-09-10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"flights",
+								"search"
+							],
+							"query": [
+								{
+									"key": "origin",
+									"value": "BER"
+								},
+								{
+									"key": "destination",
+									"value": "MUC"
+								},
+								{
+									"key": "arrivalTime",
+									"value": "2024-09-10T18:00:00Z",
+									"description": "ISO_DATE_TIME format (UTC)"
+								},
+								{
+									"key": "departureDate",
+									"value": "2024-09-10"
+								}
+							]
+						},
+						"description": "Filters flights arriving on or before the specified UTC date-time."
+					},
+					"response": []
+				},
+				{
+					"name": "Search with All Filters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/flights/search?origin=JFK&destination=LHR&airline=CrazySupplierAirline&departureTime=2024-08-15T06:00:00Z&arrivalTime=2024-08-15T20:00:00Z&departureDate=2024-08-15",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"flights",
+								"search"
+							],
+							"query": [
+								{
+									"key": "origin",
+									"value": "JFK"
+								},
+								{
+									"key": "destination",
+									"value": "LHR"
+								},
+								{
+									"key": "airline",
+									"value": "CrazySupplierAirline"
+								},
+								{
+									"key": "departureTime",
+									"value": "2024-08-15T06:00:00Z"
+								},
+								{
+									"key": "arrivalTime",
+									"value": "2024-08-15T20:00:00Z"
+								},
+								{
+									"key": "departureDate",
+									"value": "2024-08-15"
+								}
+							]
+						},
+						"description": "A comprehensive search query using multiple available filters. Remember `departureDate` is crucial for CrazySupplier."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for searching flights, combining results from the internal database and CrazySupplier."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "default"
+		}
+	]
+}

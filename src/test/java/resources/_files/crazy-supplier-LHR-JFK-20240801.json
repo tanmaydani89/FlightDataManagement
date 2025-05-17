@@ -1,0 +1,20 @@
+[
+  {
+    "carrier": "MockCrazyAir",
+    "basePrice": 450.00,
+    "tax": 45.00,
+    "departureAirportName": "LHR",
+    "arrivalAirportName": "JFK",
+    "outboundDateTime": "2024-08-01T14:00:00",
+    "inboundDateTime": "2024-08-01T22:00:00"
+  },
+  {
+    "carrier": "MockFastJet",
+    "basePrice": 400.00,
+    "tax": 40.00,
+    "departureAirportName": "LHR",
+    "arrivalAirportName": "JFK",
+    "outboundDateTime": "2024-08-01T16:30:00",
+    "inboundDateTime": "2024-08-02T00:30:00"
+  }
+]
