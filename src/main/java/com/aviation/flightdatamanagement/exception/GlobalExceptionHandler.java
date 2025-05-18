@@ -1,7 +1,8 @@
 package com.aviation.flightdatamanagement.exception;
 
-import org.slf4j.Logger; // Import SLF4J Logger
-import org.slf4j.LoggerFactory; // Import SLF4J LoggerFactory
+import com.aviation.flightdatamanagement.exception.SupplierSpecificException.CrazySupplierApiException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -56,11 +57,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(CrazySupplierApiException.class) // Assuming you created this from the previous example
+    @ExceptionHandler(CrazySupplierApiException.class)
     public ResponseEntity<?> handleCrazySupplierApiException(CrazySupplierApiException ex, WebRequest request) {
         Map<String, String> body = new HashMap<>();
-        // For external API errors, you might want a more generic message to the client
-        // and log the detailed error from ex.getMessage() or ex.getCause()
         body.put("message", "Error communicating with an external flight supplier. Please try again later.");
         logger.error(
                 "CrazySupplierAPIException encountered for request [{}]: {}",
@@ -82,7 +81,6 @@ public class GlobalExceptionHandler {
         );
 
         Map<String, String> body = new HashMap<>();
-        // For unexpected errors (HttpStatus.INTERNAL_SERVER_ERROR),
         body.put("message", "An unexpected internal server error occurred. Please try again later.");
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }

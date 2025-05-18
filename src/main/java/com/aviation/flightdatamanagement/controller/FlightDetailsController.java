@@ -5,10 +5,11 @@ import com.aviation.flightdatamanagement.dto.FlightResponseDto;
 import com.aviation.flightdatamanagement.service.FlightDetailsService;
 import com.aviation.flightdatamanagement.util.DateTimeUtil;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import jakarta.validation.constraints.Pattern;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/flights")
-@RequiredArgsConstructor
 public class FlightDetailsController {
 
     private final FlightDetailsService flightDetailsService;
+
+    @Autowired
+    public FlightDetailsController(FlightDetailsService flightDetailsService) {
+        this.flightDetailsService = flightDetailsService;
+    }
 
     @PostMapping
     @Operation(summary = "Create a new flight entry")
@@ -70,11 +75,13 @@ public class FlightDetailsController {
                     + "Timestamps follow ISO_DATE_TIME (UTC), and dates use ISO_LOCAL_DATE format."
     )
     public ResponseEntity<List<FlightResponseDto>> searchFlights(
+            @Pattern(regexp = "^[A-Z]{3}$", message = "Invalid IATA code. Must be exactly 3 letter")
             @Parameter(description = "Origin airport IATA code", schema = @Schema(type = "string"))
-            @RequestParam(required = false) String origin,
+            @RequestParam(required = true) String origin,
 
+            @Pattern(regexp = "^[A-Z]{3}$", message = "Invalid IATA code. Must be exactly 3 letter")
             @Parameter(description = "Destination airport IATA code", schema = @Schema(type = "string"))
-            @RequestParam(required = false) String destination,
+            @RequestParam(required = true) String destination,
 
             @Parameter(description = "Airline name", schema = @Schema(type = "string"))
             @RequestParam(required = false) String airline,

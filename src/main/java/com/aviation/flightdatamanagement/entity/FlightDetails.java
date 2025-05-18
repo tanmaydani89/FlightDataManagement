@@ -31,7 +31,7 @@ public class FlightDetails {
     private String airline;
 
     @NotBlank(message = "Supplier is mandatory")
-    private String supplier; // e.g., "InternalDB", "CrazySupplier"
+    private String supplier;
 
     @NotNull(message = "Fare is mandatory")
     @Positive(message = "Fare must be positive")

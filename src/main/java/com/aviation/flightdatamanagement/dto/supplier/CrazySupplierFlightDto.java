@@ -1,4 +1,4 @@
-package com.aviation.flightdatamanagement.dto;
+package com.aviation.flightdatamanagement.dto.supplier;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;

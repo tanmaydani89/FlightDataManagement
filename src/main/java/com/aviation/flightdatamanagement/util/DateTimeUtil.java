@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 
 public class DateTimeUtil {
 
-    public static final ZoneId CET_ZONE_ID = ZoneId.of("CET"); // Or "Europe/Paris", "Europe/Berlin" etc.
+    public static final ZoneId CET_ZONE_ID = ZoneId.of("CET");
 
     // Converts a LocalDateTime in CET to OffsetDateTime in UTC
     public static OffsetDateTime fromCetToUtc(LocalDateTime cetDateTime) {

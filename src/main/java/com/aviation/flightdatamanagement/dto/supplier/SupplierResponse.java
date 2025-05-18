@@ -1,4 +1,4 @@
-package com.aviation.flightdatamanagement.dto;
+package com.aviation.flightdatamanagement.dto.supplier;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Data
 public class SupplierResponse {
 
-    private String carrier; // Airline name
+    private String carrier;
     private BigDecimal basePrice;
     private BigDecimal tax;
     private String departureAirportName; // 3-letter airport name

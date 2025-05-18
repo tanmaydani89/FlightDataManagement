@@ -6,10 +6,12 @@ import com.aviation.flightdatamanagement.entity.FlightDetails;
 import com.aviation.flightdatamanagement.exception.ResourceNotFoundException;
 import com.aviation.flightdatamanagement.repository.FlightDetailsRepository;
 import com.aviation.flightdatamanagement.util.DateTimeUtil;
+import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.criteria.Predicate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +27,13 @@ import java.util.stream.Stream;
 public class FlightDetailsService {
 
     private final FlightDetailsRepository flightRepository;
-    private final SupplierService supplierService;
-    private static final Logger log = LogManager.getLogger(FlightDetailsService.class);
+    private final ISupplierService supplierService;
+    private static final Logger LOGGER = LogManager.getLogger(FlightDetailsService.class);
 
 
     @Autowired
-    public FlightDetailsService(FlightDetailsRepository flightRepository, SupplierService supplierService) {
+    public FlightDetailsService(@Qualifier("CrazySupplierServiceImpl") ISupplierService supplierService,
+                                FlightDetailsRepository flightRepository) {
         this.flightRepository = flightRepository;
         this.supplierService = supplierService;
     }
@@ -109,15 +112,16 @@ public class FlightDetailsService {
 
         List<FlightResponseDto> internalFlights = flightRepository.findAll(spec).stream()
                 .map(this::mapToResponseDto)
-                .collect(Collectors.toList());
+                .toList();
 
-        log.info("Found {} flights from internal DB.", internalFlights.size());
+        LOGGER.info("Found {} flights from internal DB.", internalFlights.size());
 
         // 2. Search CrazySupplier
         List<FlightResponseDto> crazySupplierFlights = new ArrayList<>();
-        if (origin != null && !origin.isBlank() && destination != null && !destination.isBlank() && departureDate != null) {
+        if (!StringUtils.isBlank(origin) &&
+                 !StringUtils.isBlank(destination) && departureDate != null) {
             crazySupplierFlights = supplierService.fetchFlights(origin, destination, departureDate);
-            log.info("Found {} flights from CrazySupplier.", crazySupplierFlights.size());
+            LOGGER.info("Found {} flights from CrazySupplier.", crazySupplierFlights.size());
 
             // Additional filters
             crazySupplierFlights = crazySupplierFlights.stream()
@@ -125,7 +129,7 @@ public class FlightDetailsService {
                     .filter(f -> departureTime == null || !f.getDepartureTime().isBefore(departureTime))
                     .filter(f -> arrivalTime == null || !f.getArrivalTime().isAfter(arrivalTime))
                     .collect(Collectors.toList());
-            log.info("After filtering, {} flights remain from CrazySupplier.", crazySupplierFlights.size());
+            LOGGER.info("After filtering, {} flights remain from CrazySupplier.", crazySupplierFlights.size());
         }
 
         // 3. Concat and return

@@ -1,4 +1,4 @@
-package com.aviation.flightdatamanagement.exception;
+package com.aviation.flightdatamanagement.exception.SupplierSpecificException;
 
 /**
  * Custom exception to represent errors occurring during interaction

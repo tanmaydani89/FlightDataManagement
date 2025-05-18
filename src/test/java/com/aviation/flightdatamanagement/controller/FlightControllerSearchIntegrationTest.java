@@ -50,12 +50,11 @@ public class FlightControllerSearchIntegrationTest {
                         .withBodyFile("crazy-supplier-LHR-JFK-20240801.json")
                 ));
 
-        // 2. Perform the search request to your application's endpoint
         MvcResult result = mockMvc.perform(get("/api/flights/search")
                         .param("origin", "LHR")
                         .param("destination", "JFK")
                         .param("departureDate", "2024-08-01"))
-                .andDo(print()) // Print request and response for debugging
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)))

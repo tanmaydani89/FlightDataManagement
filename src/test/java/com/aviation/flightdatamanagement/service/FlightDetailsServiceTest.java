@@ -31,7 +31,7 @@ public class FlightDetailsServiceTest {
     private FlightDetailsRepository flightRepository;
 
     @Mock
-    private SupplierService crazySupplierService;
+    private ISupplierService crazySupplierService;
 
     @InjectMocks
     private FlightDetailsService flightService;
@@ -157,7 +157,7 @@ public class FlightDetailsServiceTest {
 
         FlightResponseDto crazyFlight = FlightResponseDto.builder()
                 .airline("CrazyAir")
-                .supplier(com.aviation.flightdatamanagement.service.SupplierService.SUPPLIER_NAME)
+                .supplier(com.aviation.flightdatamanagement.service.CrazySupplierServiceImpl.SUPPLIER_NAME)
                 .fare(new BigDecimal("300.00"))
                 .departureAirport(origin)
                 .destinationAirport(destination)
@@ -172,7 +172,7 @@ public class FlightDetailsServiceTest {
 
         assertEquals(2, results.size());
         assertTrue(results.stream().anyMatch(f -> "InternalDB".equals(f.getSupplier())));
-        assertTrue(results.stream().anyMatch(f -> com.aviation.flightdatamanagement.service.SupplierService.SUPPLIER_NAME.equals(f.getSupplier())));
+        assertTrue(results.stream().anyMatch(f -> com.aviation.flightdatamanagement.service.CrazySupplierServiceImpl.SUPPLIER_NAME.equals(f.getSupplier())));
     }
 
     @Test
@@ -183,17 +183,17 @@ public class FlightDetailsServiceTest {
         LocalDate searchDepDate = LocalDate.of(2024,3,15);
 
         FlightResponseDto crazyFlight1 = FlightResponseDto.builder() // Matches airline
-                .airline("MatchAir") .supplier(com.aviation.flightdatamanagement.service.SupplierService.SUPPLIER_NAME) .fare(BigDecimal.ONE)
+                .airline("MatchAir") .supplier(com.aviation.flightdatamanagement.service.CrazySupplierServiceImpl.SUPPLIER_NAME) .fare(BigDecimal.ONE)
                 .departureAirport(origin).destinationAirport(destination)
                 .departureTime(OffsetDateTime.parse("2024-03-15T10:00:00Z"))
                 .arrivalTime(OffsetDateTime.parse("2024-03-15T12:00:00Z")).build();
         FlightResponseDto crazyFlight2 = FlightResponseDto.builder() // Does not match airline
-                .airline("OtherAir") .supplier(com.aviation.flightdatamanagement.service.SupplierService.SUPPLIER_NAME) .fare(BigDecimal.ONE)
+                .airline("OtherAir") .supplier(com.aviation.flightdatamanagement.service.CrazySupplierServiceImpl.SUPPLIER_NAME) .fare(BigDecimal.ONE)
                 .departureAirport(origin).destinationAirport(destination)
                 .departureTime(OffsetDateTime.parse("2024-03-15T11:00:00Z"))
                 .arrivalTime(OffsetDateTime.parse("2024-03-15T13:00:00Z")).build();
         FlightResponseDto crazyFlight3 = FlightResponseDto.builder() // Matches airline, but dep time too early
-                .airline("MatchAir") .supplier(com.aviation.flightdatamanagement.service.SupplierService.SUPPLIER_NAME) .fare(BigDecimal.ONE)
+                .airline("MatchAir") .supplier(com.aviation.flightdatamanagement.service.CrazySupplierServiceImpl.SUPPLIER_NAME) .fare(BigDecimal.ONE)
                 .departureAirport(origin).destinationAirport(destination)
                 .departureTime(OffsetDateTime.parse("2024-03-15T08:00:00Z")) // Earlier than searchDepTime
                 .arrivalTime(OffsetDateTime.parse("2024-03-15T10:00:00Z")).build();
@@ -203,9 +203,9 @@ public class FlightDetailsServiceTest {
         when(crazySupplierService.fetchFlights(origin, destination, searchDepDate)).thenReturn(List.of(crazyFlight1, crazyFlight2, crazyFlight3));
 
         List<FlightResponseDto> results = flightService.searchFlights(
-                origin, destination, "MatchAir", // Airline filter
-                OffsetDateTime.parse("2024-03-15T09:00:00Z"), // Departure time filter (UTC)
-                null, // No arrival time filter
+                origin, destination, "MatchAir",
+                OffsetDateTime.parse("2024-03-15T09:00:00Z"),
+                null,
                 searchDepDate);
 
         assertEquals(1, results.size());
