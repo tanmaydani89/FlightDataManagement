@@ -21,6 +21,8 @@ Components:
 6. Used Swagger for validation and Jackson for mapping.
 7. Wiremock folder contains mocked data from crazySupplier.
 8. Not added any security features and other components like load balancers, rate limiter as currently only 1 service is integrated.
+9. The second diagram when more than more suppliers are integrated.
 
 
 ![img_2.png](img_2.png)
+![img.png](img.png)
